@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechStore - Checkout</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-brand">
+                <h1><a href="index.html">TechStore</a></h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html#products">Products</a></li>
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+            <div class="cart-icon">
+                <i class="fas fa-shopping-cart"></i> <span class="cart-count">0</span>
+            </div>
+            <div class="hamburger">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-times"></i>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Checkout Section -->
+    <section class="checkout">
+        <div class="checkout-container">
+            <div class="section-header">
+                <h2>Checkout</h2>
+                <p>Complete your order in just a few steps</p>
+            </div>
+            <div class="checkout-grid">
+                <!-- Cart Summary -->
+                <div class="checkout-cart">
+                    <h3>Cart Summary</h3>
+                    <div id="cartItems"></div>
+                    <div class="cart-total">
+                        <strong>Subtotal: $<span id="cartSubtotal">0</span></strong>
+                    </div>
+                </div>
+                <!-- Checkout Form -->
+                <div class="checkout-form">
+                    <h3>Shipping Information</h3>
+                    <form id="checkoutForm" onsubmit="submitOrder(event)">
+                        <div class="form-group">
+                            <label for="fullName">Full Name</label>
+                            <input type="text" id="fullName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="address">Address</label>
+                            <input type="text" id="address" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="city">City</label>
+                            <input type="text" id="city" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="zipCode">Zip Code</label>
+                            <input type="text" id="zipCode" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" required>
+                        </div>
+                        <h3>Payment Information</h3>
+                        <div class="form-group">
+                            <label for="cardNumber">Card Number</label>
+                            <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" required>
+                        </div>
+                        <div class="form-group form-row">
+                            <div>
+                                <label for="expiry">Expiry Date</label>
+                                <input type="text" id="expiry" placeholder="MM/YY" required>
+                            </div>
+                            <div>
+                                <label for="cvv">CVV</label>
+                                <input type="text" id="cvv" placeholder="123" required>
+                            </div>
+                        </div>
+                        <!-- Order Summary -->
+                        <div class="order-summary">
+                            <h3>Order Summary</h3>
+                            <div class="summary-item">
+                                <span>Subtotal</span>
+                                <span id="summarySubtotal">$0</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Shipping (Flat Rate)</span>
+                                <span>$20</span>
+                            </div>
+                            <div class="summary-item total">
+                                <strong>Total</strong>
+                                <strong id="summaryTotal">$0</strong>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary">Place Order</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>TechStore</h3>
+                <p>Your trusted partner for premium electronics and cutting-edge technology.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Products</h4>
+                <ul>
+                    <li><a href="index.html#products">Smartphones</a></li>
+                    <li><a href="index.html#products">Laptops</a></li>
+                    <li><a href="index.html#products">Headphones</a></li>
+                    <li><a href="index.html#products">Smart Watches</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="index.html#contact">Contact Us</a></li>
+                    <li><a href="#">Warranty</a></li>
+                    <li><a href="#">Returns</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="index.html#about">About Us</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 TechStore. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

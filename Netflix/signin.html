@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netflix - Sign In</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800"><rect fill="%23111" width="1200" height="800"/><g opacity="0.2"><rect fill="%23e50914" x="100" y="100" width="200" height="300" rx="10"/><rect fill="%23333" x="350" y="150" width="180" height="250" rx="10"/><rect fill="%23e50914" x="580" y="80" width="160" height="240" rx="10"/><rect fill="%23333" x="790" y="120" width="190" height="280" rx="10"/></g></svg>');
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .header {
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .netflix-logo {
+            color: #e50914;
+            font-size: 32px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .back-home {
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back-home:hover {
+            text-decoration: underline;
+        }
+
+        .signin-container {
+            max-width: 450px;
+            margin: 60px auto;
+            background: rgba(0,0,0,0.75);
+            padding: 60px 68px 40px;
+            border-radius: 4px;
+        }
+
+        .signin-form h1 {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 16px 20px;
+            font-size: 16px;
+            background: #333;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+        }
+
+        .form-input::placeholder {
+            color: #8c8c8c;
+        }
+
+        .form-input:focus {
+            outline: none;
+            background: #454545;
+        }
+
+        .signin-btn {
+            width: 100%;
+            background: #e50914;
+            color: #fff;
+            padding: 16px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 24px 0 12px;
+        }
+
+        .signin-btn:hover {
+            background: #f40612;
+        }
+
+        .form-help {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            font-size: 13px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .remember-me input {
+            width: 16px;
+            height: 16px;
+        }
+
+        .need-help {
+            color: #b3b3b3;
+            text-decoration: none;
+        }
+
+        .need-help:hover {
+            text-decoration: underline;
+        }
+
+        .signup-link {
+            color: #b3b3b3;
+            font-size: 16px;
+        }
+
+        .signup-link a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+
+        .captcha-text {
+            font-size: 13px;
+            color: #8c8c8c;
+            margin-top: 16px;
+            line-height: 1.4;
+        }
+
+        .captcha-text a {
+            color: #0071eb;
+            text-decoration: none;
+        }
+
+        .captcha-text a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            background: #e87c03;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .footer {
+            max-width: 450px;
+            margin: 40px auto 0;
+            padding: 0 68px;
+            color: #737373;
+            font-size: 13px;
+        }
+
+        .footer p {
+            margin-bottom: 16px;
+        }
+
+        .footer a {
+            color: #737373;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 20px;
+            }
+
+            .signin-container {
+                margin: 20px;
+                padding: 48px 28px 36px;
+            }
+
+            .footer {
+                margin: 40px 20px 0;
+                padding: 0 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="index.html" class="netflix-logo">NETFLIX</a>
+        <a href="index.html" class="back-home">← Back to Home</a>
+    </header>
+
+    <div class="signin-container">
+        <form class="signin-form" onsubmit="handleSignIn(event)">
+            <h1>Sign In</h1>
+            
+            <div class="error-message" id="errorMessage">
+                Incorrect password. Please try again or you can <a href="#">reset your password</a>.
+            </div>
+
+            <div class="form-group">
+                <input type="email" class="form-input" placeholder="Email or phone number" required>
+            </div>
+
+            <div class="form-group">
+                <input type="password" class="form-input" placeholder="Password" required>
+            </div>
+
+            <button type="submit" class="signin-btn">Sign In</button>
+
+            <div class="form-help">
+                <label class="remember-me">
+                    <input type="checkbox">
+                    <span>Remember me</span>
+                </label>
+                <a href="#" class="need-help">Need help?</a>
+            </div>
+
+            <div class="signup-link">
+                New to Netflix? <a href="signup.html">Sign up now</a>.
+            </div>
+
+            <div class="captcha-text">
+                This page is protected by Google reCAPTCHA to ensure you're not a bot. 
+                <a href="#">Learn more</a>.
+            </div>
+        </form>
+    </div>
+
+    <footer class="footer">
+        <p>Questions? Call <a href="tel:1-844-505-2993">1-844-505-2993</a></p>
+        <p>
+            <a href="#">Terms of Use</a> | 
+            <a href="#">Privacy</a> | 
+            <a href="#">Cookie Preferences</a> | 
+            <a href="#">Corporate Information</a>
+        </p>
+    </footer>
+
+    <script>
+    function handleSignIn(event) {
+        event.preventDefault();
+        
+        const email = event.target.querySelector('input[type="email"]').value;
+        const password = event.target.querySelector('input[type="password"]').value;
+        
+        // Accept any email & password (open login)
+        if (!email || !password) {
+            showError('Please enter both email and password.');
+            return;
+        }
+
+        const signInBtn = event.target.querySelector('.signin-btn');
+        signInBtn.textContent = 'Signing In...';
+        signInBtn.disabled = true;
+
+        setTimeout(() => {
+            // ✅ Redirect to homepage after successful login
+            window.location.href = "index.html";
+        }, 1500);
+    }
+
+    function showError(message) {
+        const errorDiv = document.getElementById('errorMessage');
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+        
+        setTimeout(() => {
+            errorDiv.style.display = 'none';
+        }, 5000);
+    }
+
+    // Basic real-time email validation
+    document.querySelectorAll('.form-input').forEach(input => {
+        input.addEventListener('blur', function() {
+            if (this.type === 'email' && this.value) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(this.value)) {
+                    this.style.borderBottom = '2px solid #e50914';
+                } else {
+                    this.style.borderBottom = 'none';
+                }
+            }
+        });
+
+        input.addEventListener('focus', function() {
+            this.style.borderBottom = 'none';
+        });
+    });
+</script>
+</body>
+</html>

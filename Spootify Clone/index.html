@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify - Web Player: Music for everyone</title>
+    <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Circular', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            background-color: #000000;
+            padding: 24px 16px;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .sidebar-logo {
+            width: 131px;
+            height: 40px;
+            margin-bottom: 24px;
+            display: block;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sidebar-nav button {
+            background: none;
+            border: none;
+            color: #b3b3b3;
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: color 0.2s;
+            border-radius: 8px;
+        }
+
+        .sidebar-nav button:hover,
+        .sidebar-nav button.active {
+            color: #ffffff;
+            background-color: #1a1a1a;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 32px;
+            background-color: rgba(0, 0, 0, 0.7);
+            position: fixed;
+            top: 0;
+            left: 240px;
+            right: 0;
+            z-index: 1000;
+            height: 64px;
+            backdrop-filter: blur(16px);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .nav-button {
+            width: 32px;
+            height: 32px;
+            background-color: #000000;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .nav-button:hover {
+            background-color: #1a1a1a;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .header-links {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .header-links a {
+            color: #b3b3b3;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+            transition: color 0.2s;
+        }
+
+        .header-links a:hover {
+            color: #ffffff;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .install-app {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #b3b3b3;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+            padding: 0 16px;
+            border-right: 1px solid #333333;
+            padding-right: 24px;
+        }
+
+        .install-app:hover {
+            color: #ffffff;
+        }
+
+        .auth-buttons {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .sign-up {
+            color: #b3b3b3;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+            transition: color 0.2s;
+        }
+
+        .sign-up:hover {
+            color: #ffffff;
+        }
+
+        .log-in {
+            background-color: #ffffff;
+            color: #000000;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+            padding: 10px 24px;
+            border-radius: 500px;
+            transition: transform 0.2s;
+        }
+
+        .log-in:hover {
+            transform: scale(1.04);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 240px;
+            margin-top: 64px;
+            min-height: calc(100vh - 64px - 90px);
+            background: linear-gradient(to bottom, #1e1e1e, #121212);
+            padding: 24px;
+            width: calc(100% - 240px);
+            flex: 1;
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #000;
+        }
+
+        .loading-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #1db954;
+            border-radius: 50%;
+            animation: loading 1.4s infinite ease-in-out both;
+        }
+
+        .loading-dot:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dot:nth-child(2) { animation-delay: -0.16s; }
+        .loading-dot:nth-child(3) { animation-delay: 0s; }
+
+        @keyframes loading {
+            0%, 80%, 100% {
+                transform: scale(0);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Homepage */
+        .homepage {
+            display: none;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .homepage.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 900;
+            margin-bottom: 16px;
+            color: #ffffff;
+            letter-spacing: -0.04em;
+        }
+
+        .playlist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .playlist-card {
+            background-color: #181818;
+            padding: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .playlist-card:hover {
+            background-color: #282828;
+        }
+
+        .playlist-image {
+            width: 100%;
+            aspect-ratio: 1/1;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .playlist-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .play-button {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(29, 185, 84, 0.8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s;
+            backdrop-filter: blur(10px);
+        }
+
+        .playlist-card:hover .play-button {
+            opacity: 1;
+        }
+
+        .playlist-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #ffffff;
+        }
+
+        .playlist-description {
+            font-size: 14px;
+            color: #b3b3b3;
+            line-height: 1.4;
+        }
+
+        /* Now Playing Bar */
+        .now-playing-bar {
+            position: fixed;
+            bottom: 0;
+            left: 240px;
+            right: 0;
+            height: 90px;
+            background-color: #181818;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            z-index: 1000;
+            border-top: 1px solid #282828;
+        }
+
+        .track-info {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .track-image {
+            width: 56px;
+            height: 56px;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+
+        .track-details {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .track-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .track-artist {
+            font-size: 12px;
+            color: #b3b3b3;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .player-controls {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            max-width: 500px;
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .control-button {
+            background: none;
+            border: none;
+            color: #b3b3b3;
+            cursor: pointer;
+            transition: color 0.2s;
+            padding: 4px;
+        }
+
+        .control-button:hover {
+            color: #ffffff;
+        }
+
+        .control-button.play-pause {
+            color: #ffffff;
+            background-color: #1db954;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .control-button.play-pause .iconify {
+            color: #000000;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background-color: #404040;
+            border-radius: 2px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .progress {
+            width: 30%;
+            height: 100%;
+            background-color: #1db954;
+            border-radius: 2px;
+        }
+
+        .volume-control {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+            min-width: 120px;
+        }
+
+        .volume-bar {
+            flex: 1;
+            max-width: 100px;
+            height: 4px;
+            background-color: #404040;
+            border-radius: 2px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .volume {
+            width: 70%;
+            height: 100%;
+            background-color: #1db954;
+            border-radius: 2px;
+        }
+
+        /* Auth Pages */
+        .auth-page {
+            display: none;
+            min-height: calc(100vh - 64px);
+            background: linear-gradient(135deg, #1db954, #1ed760);
+            padding: 80px 24px;
+            margin-left: 240px;
+        }
+
+        .auth-page.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auth-container {
+            background-color: #000000;
+            padding: 48px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+
+        .auth-title {
+            font-size: 32px;
+            font-weight: 900;
+            margin-bottom: 24px;
+            color: #ffffff;
+            letter-spacing: -0.04em;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .form-group {
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #ffffff;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #727272;
+            border-radius: 4px;
+            background-color: #121212;
+            color: #ffffff;
+            font-size: 16px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #1db954;
+        }
+
+        .auth-button {
+            background-color: #1db954;
+            color: #000000;
+            border: none;
+            padding: 16px;
+            border-radius: 500px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 16px;
+            transition: background-color 0.2s;
+        }
+
+        .auth-button:hover {
+            background-color: #1ed760;
+        }
+
+        .auth-divider {
+            margin: 24px 0;
+            text-align: center;
+            position: relative;
+            color: #b3b3b3;
+        }
+
+        .auth-divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background-color: #727272;
+        }
+
+        .auth-divider span {
+            background-color: #000000;
+            padding: 0 16px;
+        }
+
+        .auth-switch {
+            margin-top: 24px;
+            color: #b3b3b3;
+            font-size: 14px;
+        }
+
+        .auth-switch a {
+            color: #ffffff;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-button:hover {
+            color: #1db954;
+        }
+
+        /* Icons */
+        .iconify {
+            color: currentColor;
+            transition: color 0.2s;
+        }
+
+        .iconify.icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        .sidebar-nav button:hover .iconify,
+        .sidebar-nav button.active .iconify,
+        .control-button:hover .iconify {
+            color: #ffffff;
+        }
+
+        .play-button .iconify {
+            color: #000000;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 72px;
+                padding: 16px 8px;
+            }
+
+            .sidebar-logo {
+                width: 24px;
+                height: 24px;
+            }
+
+            .sidebar-nav button span {
+                display: none;
+            }
+
+            .sidebar-nav button {
+                padding: 8px;
+                justify-content: center;
+            }
+
+            .header,
+            .main-content,
+            .auth-page,
+            .now-playing-bar {
+                margin-left: 72px;
+                width: calc(100% - 72px);
+            }
+
+            .header-links {
+                gap: 16px;
+            }
+
+            .playlist-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 16px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: 64px;
+                bottom: auto;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 16px;
+                z-index: 1002;
+                position: fixed;
+                top: 0;
+            }
+
+            .sidebar-logo {
+                width: 100px;
+                height: 30px;
+                margin-bottom: 0;
+            }
+
+            .sidebar-nav {
+                flex-direction: row;
+                gap: 16px;
+            }
+
+            .sidebar-nav button {
+                padding: 8px;
+            }
+
+            .sidebar-nav button span {
+                display: inline;
+            }
+
+            .header {
+                left: 0;
+                width: 100%;
+                padding: 12px 16px;
+                top: 64px;
+                height: 56px;
+            }
+
+            .header-links,
+            .install-app {
+                display: none;
+            }
+
+            .auth-buttons {
+                gap: 12px;
+            }
+
+            .sign-up,
+            .log-in {
+                font-size: 12px;
+                padding: 8px 16px;
+            }
+
+            .main-content,
+            .auth-page {
+                margin-left: 0;
+                margin-top: 120px;
+                width: 100%;
+                padding: 16px;
+            }
+
+            .playlist-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 12px;
+            }
+
+            .section-title {
+                font-size: 20px;
+            }
+
+            .playlist-title {
+                font-size: 14px;
+            }
+
+            .playlist-description {
+                font-size: 12px;
+            }
+
+            .auth-container {
+                padding: 24px;
+                max-width: 100%;
+            }
+
+            .auth-title {
+                font-size: 24px;
+            }
+
+            .form-input {
+                font-size: 14px;
+                padding: 10px 12px;
+            }
+
+            .auth-button {
+                padding: 12px;
+                font-size: 14px;
+            }
+
+            .now-playing-bar {
+                margin-left: 0;
+                width: 100%;
+                height: auto;
+                flex-direction: column;
+                padding: 12px;
+                gap: 12px;
+            }
+
+            .track-info,
+            .player-controls,
+            .volume-control {
+                flex: none;
+                width: 100%;
+                justify-content: center;
+            }
+
+            .track-image {
+                width: 40px;
+                height: 40px;
+            }
+
+            .track-title {
+                font-size: 12px;
+            }
+
+            .track-artist {
+                font-size: 10px;
+            }
+
+            .control-buttons {
+                gap: 12px;
+            }
+
+            .control-button {
+                transform: scale(0.8);
+            }
+
+            .progress-bar {
+                max-width: 100%;
+            }
+
+            .volume-bar {
+                width: 80px;
+            }
+
+            .iconify {
+                width: 18px;
+                height: 18px;
+            }
+
+            .control-button .iconify {
+                width: 16px;
+                height: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sidebar {
+                padding: 0 12px;
+            }
+
+            .sidebar-logo {
+                width: 80px;
+                height: 24px;
+            }
+
+            .header {
+                padding: 8px 12px;
+            }
+
+            .auth-buttons {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .main-content,
+            .auth-page {
+                padding: 12px;
+            }
+
+            .playlist-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .auth-container {
+                padding: 16px;
+            }
+
+            .auth-title {
+                font-size: 20px;
+            }
+
+            .control-buttons {
+                gap: 8px;
+            }
+
+            .control-button {
+                transform: scale(0.7);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <span class="iconify sidebar-logo" data-icon="mdi:spotify" width="131" height="40"></span>
+        <div class="sidebar-nav">
+            <button class="active" onclick="goHome()">
+                <span class="iconify icon" data-icon="mdi:home"></span>
+                <span>Home</span>
+            </button>
+            <button onclick="openSearch()">
+                <span class="iconify icon" data-icon="mdi:magnify"></span>
+                <span>Search</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <button class="nav-button" onclick="toggleSidebar()">
+                <span class="iconify icon" data-icon="mdi:menu"></span>
+            </button>
+        </div>
+        <div class="header-right">
+            <div class="header-links">
+                <a href="#" onclick="showPremium()">Premium</a>
+                <a href="#" onclick="showSupport()">Support</a>
+                <a href="#" onclick="showDownload()">Download</a>
+            </div>
+            <div class="header-actions">
+                <a href="#" class="install-app" onclick="installApp()">
+                    <span class="iconify" data-icon="mdi:download" width="20" height="20"></span>
+                    Install App
+                </a>
+                <div class="auth-buttons">
+                    <a href="#" class="sign-up" onclick="signUp()">Sign up</a>
+                    <a href="#" class="log-in" onclick="logIn()">Log in</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="loading" id="loading">
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+        </div>
+        <div class="homepage" id="homepage">
+            <section>
+                <h2 class="section-title">Good afternoon</h2>
+                <div class="playlist-grid">
+                    <div class="playlist-card" onclick="playPlaylist('Liked Songs')">
+                        <div class="playlist-image">
+                            <img src="https://misc.scdn.co/liked-songs/liked-songs-300.png" alt="Liked Songs">
+                            <div class="play-button">
+                                <span class="iconify" data-icon="mdi:play-circle" width="20" height="20"></span>
+                            </div>
+                        </div>
+                        <div class="playlist-title">Liked Songs</div>
+                        <div class="playlist-description">Your favorite tracks</div>
+                    </div>
+                    <div class="playlist-card" onclick="playPlaylist('Recently Played')">
+                        <div class="playlist-image">
+                            <img src="https://t.scdn.co/images/ea364e99656e46a8af0d6f8e9f4d8d7e.jpg" alt="Recently Played">
+                            <div class="play-button">
+                                <span class="iconify" data-icon="mdi:play-circle" width="20" height="20"></span>
+                            </div>
+                        </div>
+                        <div class="playlist-title">Recently Played</div>
+                        <div class="playlist-description">Your recent listening history</div>
+                    </div>
+                    <div class="playlist-card" onclick="playPlaylist('Discover Weekly')">
+                        <div class="playlist-image">
+                            <img src="https://i.scdn.co/image/ab67706f00000002724554ed6bed6f51d87b03a1" alt="Discover Weekly">
+                            <div class="play-button">
+                                <span class="iconify" data-icon="mdi:play-circle" width="20" height="20"></span>
+                            </div>
+                        </div>
+                        <div class="playlist-title">Discover Weekly</div>
+                        <div class="playlist-description">Your weekly mixtape of fresh music</div>
+                    </div>
+                    <div class="playlist-card" onclick="playPlaylist('Release Radar')">
+                        <div class="playlist-image">
+                            <img src="https://i.scdn.co/image/ab67706f000000027ea4e8bded6e09464346b1e2" alt="Release Radar">
+                            <div class="play-button">
+                                <span class="iconify" data-icon="mdi:play-circle" width="20" height="20"></span>
+                            </div>
+                        </div>
+                        <div class="playlist-title">Release Radar</div>
+                        <div class="playlist-description">Catch all the latest music from artists you follow</div>
+                    </div>
+                    <div class="playlist-card" onclick="playPlaylist('Daily Mix 1')">
+                        <div class="playlist-image">
+                            <img src="https://dailymix-images.scdn.co/v2/img/ab6761610000e5eb8a3e66e6c0a9e5d6a9e5d6a9/1/en/default" alt="Daily Mix 1">
+                            <div class="play-button">
+                                <span class="iconify" data-icon="mdi:play-circle" width="20" height="20"></span>
+                            </div>
+                        </div>
+                        <div class="playlist-title">Daily Mix 1</div>
+                        <div class="playlist-description">Made for you</div>
+                    </div>
+                    <div class="playlist-card" onclick="playPlaylist('Chill Hits')">
+                        <div class="playlist-image">
+                            <img src="https://i.scdn.co/image/ab67706c0000bebb8a3e66e6c0a9e5d6a9e5d6a9" alt="Chill Hits">
+                            <div class="play-button">
+                                <span class="iconify" data-icon="mdi:play-circle" width="20" height="20"></span>
+                            </div>
+                        </div>
+                        <div class="playlist-title">Chill Hits</div>
+                        <div class="playlist-description">Kick back to the best new and recent chill hits</div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Now Playing Bar -->
+    <div class="now-playing-bar">
+        <div class="track-info">
+            <img src="https://i.scdn.co/image/ab67616d00004851f54b99bf27cda88f4a7403ce" alt="Track Image" class="track-image">
+            <div class="track-details">
+                <div class="track-title">Sample Track</div>
+                <div class="track-artist">Sample Artist</div>
+            </div>
+        </div>
+        <div class="player-controls">
+            <div class="control-buttons">
+                <button class="control-button" onclick="previousTrack()">
+                    <span class="iconify" data-icon="mdi:skip-previous" width="20" height="20"></span>
+                </button>
+                <button class="control-button" onclick="rewind()">
+                    <span class="iconify" data-icon="mdi:rewind" width="20" height="20"></span>
+                </button>
+                <button class="control-button play-pause" onclick="togglePlay()">
+                    <span class="iconify play-pause-icon" data-icon="mdi:play" width="16" height="16"></span>
+                </button>
+                <button class="control-button" onclick="fastForward()">
+                    <span class="iconify" data-icon="mdi:fast-forward" width="20" height="20"></span>
+                </button>
+                <button class="control-button" onclick="nextTrack()">
+                    <span class="iconify" data-icon="mdi:skip-next" width="20" height="20"></span>
+                </button>
+            </div>
+            <div class="progress-bar" onclick="seek(event)">
+                <div class="progress"></div>
+            </div>
+        </div>
+        <div class="volume-control">
+            <button class="control-button" onclick="toggleMute()">
+                <span class="iconify" data-icon="mdi:volume-high" width="20" height="20"></span>
+            </button>
+            <div class="volume-bar" onclick="setVolume(event)">
+                <div class="volume"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Page -->
+    <div class="auth-page" id="signup-page">
+        <button class="back-button" onclick="goHome()">
+            <span class="iconify" data-icon="mdi:arrow-left" width="16" height="16"></span>
+            Back
+        </button>
+        <div class="auth-container">
+            <h1 class="auth-title">Sign up for free to start listening.</h1>
+            <form class="auth-form" onsubmit="handleSignup(event)">
+                <div class="form-group">
+                    <label class="form-label" for="signup-email">What's your email?</label>
+                    <input class="form-input" type="email" id="signup-email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="signup-password">Create a password</label>
+                    <input class="form-input" type="password" id="signup-password" placeholder="Create a password" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="signup-name">What should we call you?</label>
+                    <input class="form-input" type="text" id="signup-name" placeholder="Enter a profile name" required>
+                </div>
+                <button type="submit" class="auth-button">Sign up</button>
+            </form>
+            <div class="auth-divider">
+                <span>or</span>
+            </div>
+            <div class="auth-switch">
+                Already have an account? <a onclick="showLogin()">Log in here</a>.
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Page -->
+    <div class="auth-page" id="login-page">
+        <button class="back-button" onclick="goHome()">
+            <span class="iconify" data-icon="mdi:arrow-left" width="16" height="16"></span>
+            Back
+        </button>
+        <div class="auth-container">
+            <h1 class="auth-title">Log in to Spotify</h1>
+            <form class="auth-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label class="form-label" for="login-email">Email or username</label>
+                    <input class="form-input" type="text" id="login-email" placeholder="Email or username" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="login-password">Password</label>
+                    <input class="form-input" type="password" id="login-password" placeholder="Password" required>
+                </div>
+                <button type="submit" class="auth-button">Log in</button>
+            </form>
+            <div class="auth-divider">
+                <span>or</span>
+            </div>
+            <div class="auth-switch">
+                Don't have an account? <a onclick="showSignup()">Sign up for Spotify</a>.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 'loading';
+        let isPlaying = false;
+        let currentVolume = 0.7;
+        let progressWidth = 0;
+
+        function showPage(pageId) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('homepage').classList.remove('active');
+            document.getElementById('signup-page').classList.remove('active');
+            document.getElementById('login-page').classList.remove('active');
+            
+            if (pageId === 'loading') {
+                document.getElementById('loading').style.display = 'flex';
+            } else if (pageId === 'homepage') {
+                document.getElementById('homepage').classList.add('active');
+            } else if (pageId === 'signup') {
+                document.getElementById('signup-page').classList.add('active');
+            } else if (pageId === 'login') {
+                document.getElementById('login-page').classList.add('active');
+            }
+            
+            currentPage = pageId;
+            
+            document.querySelectorAll('.sidebar-nav button').forEach(btn => btn.classList.remove('active'));
+            if (pageId === 'homepage') {
+                document.querySelector('.sidebar-nav button').classList.add('active');
+            } else if (pageId === 'search') {
+                document.querySelectorAll('.sidebar-nav button')[1].classList.add('active');
+            }
+        }
+
+        function goHome() {
+            console.log('[2025] Home clicked');
+            showPage('homepage');
+        }
+
+        function openSearch() {
+            console.log('[2025] Search clicked');
+            showPage('search');
+            alert('Search functionality coming soon!');
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            if (window.innerWidth > 1024) {
+                sidebar.style.left = sidebar.style.left === '0px' ? '-240px' : '0px';
+            } else {
+                sidebar.style.display = sidebar.style.display === 'none' ? 'flex' : 'none';
+            }
+        }
+
+        function showPremium() {
+            console.log('[2025] Premium clicked');
+            alert('Premium features coming soon!');
+        }
+
+        function showSupport() {
+            console.log('[2025] Support clicked');
+            alert('Support page coming soon!');
+        }
+
+        function showDownload() {
+            console.log('[2025] Download clicked');
+            alert('Download page coming soon!');
+        }
+
+        function installApp() {
+            console.log('[2025] Install App clicked');
+            alert('App installation coming soon!');
+        }
+
+        function signUp() {
+            console.log('[2025] Sign up clicked');
+            showPage('signup');
+        }
+
+        function logIn() {
+            console.log('[2025] Log in clicked');
+            showPage('login');
+        }
+
+        function showSignup() {
+            showPage('signup');
+        }
+
+        function showLogin() {
+            showPage('login');
+        }
+
+        function handleSignup(event) {
+            event.preventDefault();
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const name = document.getElementById('signup-name').value;
+            
+            console.log('[2025] Signup attempt:', { email, name });
+            alert(`Welcome ${name}! Account created successfully.`);
+            showPage('homepage');
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            console.log('[2025] Login attempt:', { email });
+            alert('Login successful! Welcome back.');
+            showPage('homepage');
+        }
+
+        function playPlaylist(playlistName) {
+            console.log('[2025] Playing playlist:', playlistName);
+            isPlaying = true;
+            document.querySelector('.play-pause-icon').setAttribute('data-icon', 'mdi:pause');
+            document.querySelector('.track-title').textContent = `${playlistName} • Various Artists`;
+            document.querySelector('.track-artist').textContent = playlistName;
+            animateProgress();
+        }
+
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            const playIcon = document.querySelector('.play-pause-icon');
+            playIcon.setAttribute('data-icon', isPlaying ? 'mdi:pause' : 'mdi:play');
+        }
+
+        function previousTrack() {
+            console.log('[2025] Previous track');
+        }
+
+        function nextTrack() {
+            console.log('[2025] Next track');
+        }
+
+        function rewind() {
+            console.log('[2025] Rewind');
+        }
+
+        function fastForward() {
+            console.log('[2025] Fast forward');
+        }
+
+        function toggleMute() {
+            console.log('[2025] Toggle mute');
+        }
+
+        function animateProgress() {
+            const progress = document.querySelector('.progress');
+            progress.style.width = '0%';
+            let width = 0;
+            const interval = setInterval(() => {
+                if (width >= 100 || !isPlaying) {
+                    clearInterval(interval);
+                } else {
+                    width += 0.5;
+                    progress.style.width = width + '%';
+                }
+            }, 200);
+        }
+
+        function seek(event) {
+            const bar = event.currentTarget;
+            const rect = bar.getBoundingClientRect();
+            const percent = (event.clientX - rect.left) / rect.width * 100;
+            document.querySelector('.progress').style.width = percent + '%';
+            console.log('[2025] Seek to ' + percent + '%');
+        }
+
+        function setVolume(event) {
+            const bar = event.currentTarget;
+            const rect = bar.getBoundingClientRect();
+            const percent = (event.clientX - rect.left) / rect.width * 100;
+            document.querySelector('.volume').style.width = percent + '%';
+            currentVolume = percent / 100;
+            console.log('[2025] Volume set to ' + currentVolume);
+        }
+
+        setTimeout(() => {
+            console.log('[2025] Loading complete');
+            showPage('homepage');
+        }, 3000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netflix - Sign Up</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: #fff;
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .header {
+            padding: 20px 50px;
+            border-bottom: 1px solid #e6e6e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .netflix-logo {
+            color: #e50914;
+            font-size: 32px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .signin-link {
+            color: #333;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .signin-link:hover {
+            text-decoration: underline;
+        }
+
+        .signup-container {
+            max-width: 440px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        .progress-indicator {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .step-text {
+            font-size: 13px;
+            color: #333;
+            text-transform: uppercase;
+            margin-right: 20px;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 3px;
+            background: #e6e6e6;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #e50914;
+            width: 33%;
+            transition: width 0.3s ease;
+        }
+
+        .signup-form h1 {
+            font-size: 32px;
+            font-weight: 400;
+            margin-bottom: 16px;
+            line-height: 1.1;
+        }
+
+        .signup-form p {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 16px 20px;
+            font-size: 16px;
+            border: 1px solid #8c8c8c;
+            border-radius: 4px;
+            background: #fff;
+            color: #333;
+        }
+
+        .form-input::placeholder {
+            color: #8c8c8c;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #0071eb;
+        }
+
+        .password-input {
+            position: relative;
+        }
+
+        .show-password {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #8c8c8c;
+            cursor: pointer;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .show-password:hover {
+            color: #333;
+        }
+
+        .checkbox-group {
+            margin: 24px 0;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+        }
+
+        .checkbox-item label {
+            font-size: 15px;
+            line-height: 1.4;
+            color: #333;
+        }
+
+        .continue-btn {
+            width: 100%;
+            background: #e50914;
+            color: #fff;
+            padding: 16px;
+            border: none;
+            border-radius: 4px;
+            font-size: 18px;
+            font-weight: 400;
+            cursor: pointer;
+            margin: 24px 0;
+        }
+
+        .continue-btn:hover {
+            background: #f40612;
+        }
+
+        .continue-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .terms-text {
+            font-size: 13px;
+            color: #8c8c8c;
+            line-height: 1.4;
+            margin-top: 16px;
+        }
+
+        .terms-text a {
+            color: #0071eb;
+            text-decoration: none;
+        }
+
+        .terms-text a:hover {
+            text-decoration: underline;
+        }
+
+        .password-requirements {
+            margin-top: 8px;
+            font-size: 13px;
+            color: #8c8c8c;
+        }
+
+        .requirement {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .requirement.valid {
+            color: #46d369;
+        }
+
+        .requirement.invalid {
+            color: #e50914;
+        }
+
+        .requirement-icon {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .requirement.valid .requirement-icon {
+            background: #46d369;
+            color: #fff;
+        }
+
+        .requirement.invalid .requirement-icon {
+            background: #e50914;
+            color: #fff;
+        }
+
+        .footer {
+            background: #f3f3f3;
+            padding: 30px 50px;
+            margin-top: 60px;
+            border-top: 1px solid #e6e6e6;
+        }
+
+        .footer-content {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .footer p {
+            color: #737373;
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+
+        .footer-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .footer-links a {
+            color: #737373;
+            text-decoration: none;
+            font-size: 13px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 20px;
+            }
+
+            .signup-container {
+                padding: 40px 20px;
+            }
+
+            .signup-form h1 {
+                font-size: 28px;
+            }
+
+            .footer {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="index.html" class="netflix-logo">NETFLIX</a>
+        <a href="signin.html" class="signin-link">Sign In</a>
+    </header>
+
+    <div class="signup-container">
+        <div class="progress-indicator">
+            <span class="step-text">Step 1 of 3</span>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+        </div>
+
+        <form class="signup-form" onsubmit="handleSignUp(event)">
+            <h1>Create a password to start your membership</h1>
+            <p>Just a few more steps and you're done!<br>We hate paperwork, too.</p>
+
+            <div class="form-group">
+                <input type="email" class="form-input" placeholder="Email" required>
+            </div>
+
+            <div class="form-group password-input">
+                <input type="password" class="form-input" id="passwordInput" placeholder="Add a password" required>
+                <button type="button" class="show-password" onclick="togglePassword()">Show</button>
+            </div>
+
+            <div class="password-requirements" id="passwordRequirements" style="display: none;">
+                <div class="requirement" id="lengthReq">
+                    <span class="requirement-icon">✗</span>
+                    <span>At least 6 characters</span>
+                </div>
+                <div class="requirement" id="letterReq">
+                    <span class="requirement-icon">✗</span>
+                    <span>Contains at least one letter</span>
+                </div>
+                <div class="requirement" id="numberReq">
+                    <span class="requirement-icon">✗</span>
+                    <span>Contains at least one number</span>
+                </div>
+            </div>
+
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="emailOffers">
+                    <label for="emailOffers">Please do not email me Netflix special offers.</label>
+                </div>
+            </div>
+
+            <button type="submit" class="continue-btn" id="continueBtn" disabled>Continue</button>
+
+            <div class="terms-text">
+                By clicking "Continue", you agree to the Netflix <a href="#">Terms of Use</a> and acknowledge that you have read the <a href="#">Privacy Statement</a>. You can change your communication preferences at any time.
+            </div>
+        </form>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>Questions? Call <a href="tel:1-844-505-2993">1-844-505-2993</a></p>
+            <div class="footer-links">
+                <div>
+                    <a href="#">FAQ</a>
+                    <a href="#">Help Center</a>
+                    <a href="#">Netflix Shop</a>
+                    <a href="#">Terms of Use</a>
+                </div>
+                <div>
+                    <a href="#">Privacy</a>
+                    <a href="#">Cookie Preferences</a>
+                    <a href="#">Corporate Information</a>
+                    <a href="#">Ad Choices</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let passwordVisible = false;
+
+        function togglePassword() {
+            const passwordInput = document.getElementById('passwordInput');
+            const showBtn = document.querySelector('.show-password');
+            
+            passwordVisible = !passwordVisible;
+            passwordInput.type = passwordVisible ? 'text' : 'password';
+            showBtn.textContent = passwordVisible ? 'Hide' : 'Show';
+        }
+
+        function validatePassword(password) {
+            const requirements = {
+                length: password.length >= 6,
+                letter: /[a-zA-Z]/.test(password),
+                number: /\d/.test(password)
+            };
+
+            // Update UI
+            const lengthReq = document.getElementById('lengthReq');
+            const letterReq = document.getElementById('letterReq');
+            const numberReq = document.getElementById('numberReq');
+
+            lengthReq.className = requirements.length ? 'requirement valid' : 'requirement invalid';
+            letterReq.className = requirements.letter ? 'requirement valid' : 'requirement invalid';
+            numberReq.className = requirements.number ? 'requirement valid' : 'requirement invalid';
+
+            lengthReq.querySelector('.requirement-icon').textContent = requirements.length ? '✓' : '✗';
+            letterReq.querySelector('.requirement-icon').textContent = requirements.letter ? '✓' : '✗';
+            numberReq.querySelector('.requirement-icon').textContent = requirements.number ? '✓' : '✗';
+
+            return requirements.length && requirements.letter && requirements.number;
+        }
+
+        function updateContinueButton() {
+            const email = document.querySelector('input[type="email"]').value;
+            const password = document.getElementById('passwordInput').value;
+            const continueBtn = document.getElementById('continueBtn');
+            
+            const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            const passwordValid = validatePassword(password);
+            
+            continueBtn.disabled = !(emailValid && passwordValid);
+        }
+
+        // Event listeners
+        document.getElementById('passwordInput').addEventListener('input', function() {
+            const password = this.value;
+            const requirementsDiv = document.getElementById('passwordRequirements');
+            
+            if (password.length > 0) {
+                requirementsDiv.style.display = 'block';
+                validatePassword(password);
+            } else {
+                requirementsDiv.style.display = 'none';
+            }
+            
+            updateContinueButton();
+        });
+
+        document.querySelector('input[type="email"]').addEventListener('input', updateContinueButton);
+
+        function handleSignUp(event) {
+            event.preventDefault();
+            
+            const email = event.target.querySelector('input[type="email"]').value;
+            const password = event.target.querySelector('#passwordInput').value;
+            
+            // Simulate signup process
+            const continueBtn = document.getElementById('continueBtn');
+            continueBtn.textContent = 'Creating Account...';
+            continueBtn.disabled = true;
+
+            setTimeout(() => {
+                alert('Account created successfully! (This is a demo)');
+                continueBtn.textContent = 'Continue';
+                continueBtn.disabled = false;
+                
+                // In a real app, you would proceed to the next step
+                // window.location.href = 'choose-plan.html';
+            }, 2000);
+        }
+
+        // Initialize
+        updateContinueButton();
+    </script>
+</body>
+</html>
